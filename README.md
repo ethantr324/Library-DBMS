@@ -1,8 +1,104 @@
-# Library-DBMS
-Library Database Management System
+# ShelfWatch
+Python/MySQL library management system
 
 This is a Library Database Management System project for CS 157A at SJSU, designed to organize and manage books, members, and borrowing activities. 
 
 ## Contributers
 - Ethan Tran
 - Brody Smith
+
+## Project Overview
+
+This application follows a three-tier architecture:
+- **Presentation Layer**: tkinter desktop GUI with tabs for Books, Members, Staff, and Borrow/Return
+- **Application Layer**: Python service classes that contain business logic and execute SQL directly
+- **Data Layer**: MySQL relational database with tables for Books, Members, Staff, and BorrowRecords
+
+**Features:**
+- Add, update, delete, and search books, members, and staff
+- Check out books to members and process returns
+- Automatic overdue fine calculation ($0.25/day after a 14-day loan period)
+- Borrow history log
+
+## Dependencies and Required Software
+
+- Python 3.10+
+- MySQL 8.0+
+- [mysql-connector-python](https://pypi.org/project/mysql-connector-python/) (installed via pip)
+- [pytest](https://pypi.org/project/pytest/) (installed via pip, for testing only)
+
+## Setup and Installation
+
+**1. Clone the repository**
+```
+git clone <repo-url>
+cd Library-DBMS
+```
+
+**2. Create and activate a virtual environment**
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**3. Install Python dependencies**
+```
+pip install -r requirements.txt
+```
+
+**4. Install and start MySQL**
+
+If MySQL is not already installed (macOS Homebrew):
+```
+brew install mysql
+brew services start mysql
+```
+
+**5. Create the database and tables**
+
+Run both scripts in order. The first creates the schema and the second loads seed data:
+```
+mysql -u root < db/create_schema.sql
+mysql -u root < db/initialize_data.sql
+```
+
+> If you get a permissions error on macOS, ensure your user has read access to the `db/` directory:
+> `chmod +r db/create_schema.sql db/initialize_data.sql`
+
+## Database Configuration
+
+The database connection is configured in `db/connection.py`. By default it connects to a local MySQL instance with no password:
+
+```python
+DB_CONFIG = {
+    "host": "localhost",
+    "unix_socket": "/tmp/mysql.sock",
+    "user": "root",
+    "password": "",
+    "database": "library_db",
+}
+```
+
+Update `user`, `password`, and `unix_socket` to match your local MySQL setup. On non-macOS systems, remove the `unix_socket` line.
+
+## Running the App
+
+```
+python main.py
+```
+
+## Running Tests
+
+Uses pytest and runs against an isolated `library_test_db` database. Requires MySQL to be running.
+
+```
+.venv/bin/pytest tests/ -v
+```
+
+Or activate the venv first and use plain `pytest`:
+
+```
+source .venv/bin/activate
+pytest tests/ -v
+```
+
